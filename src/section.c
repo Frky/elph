@@ -55,15 +55,27 @@ Elf64_Shdr **read_shr_all(FILE *bin, Elf64_Half shr_num, Elf64_Off shr_off, Elf6
 	for (i = 0; i < shr_num; i++) {
 		shr_tab[i] = read_section_header(bin, shr_off + offset);
 		offset += shr_entrysize;
-	}	
+	}
 	return shr_tab;
 }
 
 
 #define COLUMN_LENGTH	16
 
-void print_section_name(char *section_name) {
-	int i, l = strlen(section_name);
+
+void print_section_name(FILE *bin, unsigned int sh_name_offset) {
+	int i, l = 0;
+    char rchar;
+
+    fseek(bin, sh_name_offset, SEEK_SET);
+
+    rchar = fgetc(bin);
+    while (rchar != '\0') {
+        printf("%c", rchar);
+        rchar = fgetc(bin);
+        l++;
+    }
+    
 	for (i = l; i < COLUMN_LENGTH; i++) 
 		printf(" ");
 	printf("  ");
@@ -137,6 +149,8 @@ void print_section_type(Elf64_Word type) {
 		printf("HIPROC");
 		l = 6;
 		break;
+    default:
+        l = 0;
 	}
 	for (i = l + 1; i < COLUMN_LENGTH; i++) 
 		printf(" ");
@@ -145,27 +159,30 @@ void print_section_type(Elf64_Word type) {
 
 
 void print_section_flags(Elf64_Xword flags) {
-	if ((flags & 0x4) != 0)
-		printf("X");
+	if ((flags & 0x1) != 0)
+		printf("W");
 	else
 		printf(" ");
 	if ((flags & 0x2) != 0)
 		printf("A");
 	else
 		printf(" ");
-	if ((flags & 0x1) != 0)
-		printf("W");
+	if ((flags & 0x4) != 0)
+		printf("X");
 	else
 		printf(" ");
 	printf("   ");
 }
 
 
-void print_shr_info(Elf64_Shdr *shr) {
+/* TODO : temporary giving the whole binary */
+void print_shr_info(Elf64_Shdr *shr, ELF *bin, int shr_index) {
+	/* Section index */
+	printf("  [%2i] ", shr_index);
+
 	/* TODO */
-	printf("  [%2i] ", 0);
-	/* TODO */
-	print_section_name("");	
+	print_section_name(bin->file, bin->shr[bin->ehr->e_shstrndx]->sh_offset + shr->sh_name);	
+
 	print_section_type(shr->sh_type);
 
 	/* Section address */
@@ -209,8 +226,8 @@ void print_shr_info_all(ELF *bin) {
 	printf("  [Nr] Name              Type             Address           Offset\n");
 	printf("       Size              EntSize          Flags  Link  Info  Align\n");
 
-	for (i = 0; i < bin->ehr->e_shnum; i++) { //bin->ehr->e_shnum; i++) {
-		print_shr_info(bin->shr[i]);
+	for (i = 0; i < bin->ehr->e_shnum; i++) {
+		print_shr_info(bin->shr[i], bin, i);
 	}
 }
 

@@ -147,7 +147,7 @@ int main(int argc, char **argv) {
 	bin->ehr = read_header(bin->file);
 	bin->shr = read_shr_all(bin->file, bin->ehr->e_shnum, 
 			bin->ehr->e_shoff, bin->ehr->e_shentsize);
-	
+
 	if (PRINT_HEADER_INFO)
 		print_header_info(bin->ehr);
 
