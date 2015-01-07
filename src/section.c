@@ -12,9 +12,6 @@ Elf64_Shdr *read_section_header(FILE *bin, Elf64_Off offset) {
 	/* Seek to the beginning of the section header */
 	fseek(bin, offset, SEEK_SET);
 
-/*
-	printf("%lx | %lx\n", offset, Elf64_read_addr_le(bin));
-*/
 	Elf64_Shdr *shr = malloc(sizeof(Elf64_Shdr));
 
 	/* Read section name index in setion name table */
@@ -57,7 +54,7 @@ Elf64_Shdr **read_shr_all(FILE *bin, Elf64_Half shr_num, Elf64_Off shr_off, Elf6
 	size_t i;
 	for (i = 0; i < shr_num; i++) {
 		shr_tab[i] = read_section_header(bin, shr_off + offset);
-		offset = shr_tab[i]->sh_offset + shr_entrysize + shr_tab[i]->sh_size; 
+		offset += shr_entrysize;
 	}	
 	return shr_tab;
 }
