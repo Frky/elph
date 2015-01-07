@@ -6,7 +6,7 @@
 #include "header.h"
 #include "section.h"
 
-struct ELF_s{
+struct ELF_s {
 	FILE *file;
 	size_t 	size;
 	Elf64_Ehdr *ehr;

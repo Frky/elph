@@ -7,11 +7,13 @@
 
 #include "binary.h"
 #include "header.h"
+#include "section.h"
 #include "retcodes.h"
 
 #define	FIND_FUNCTIONS	0
 
 static int PRINT_HEADER_INFO = 0;
+static int PRINT_SECTION_HEADERS = 0;
 
 #if FIND_FUNCTIONS
 
@@ -89,6 +91,7 @@ void parse_args(int argc, char **argv) {
 			/* These options set a flag. */
 			{"debug", no_argument, 		&DEBUG_HEADER, 1},
 			{"header", no_argument, 	&PRINT_HEADER_INFO, 1},
+			{"sections", no_argument, 		&PRINT_SECTION_HEADERS, 1},
 			/* These options don't set a flag.
 			   We distinguish them by their indices. */
 #if 0
@@ -99,7 +102,7 @@ void parse_args(int argc, char **argv) {
 		/* getopt_long stores the option index here. */
 		int option_index = 0;
 
-		c = getopt_long (argc, argv, "dh",
+		c = getopt_long (argc, argv, "dhS",
 				long_options, &option_index);
 
 		switch (c) {
@@ -108,6 +111,9 @@ void parse_args(int argc, char **argv) {
 			break;
 		case 'h':
 			PRINT_HEADER_INFO = 1;
+			break;
+		case 'S':
+			PRINT_SECTION_HEADERS = 1;
 			break;
 		}
 		/* Detect the end of the options. */
@@ -126,9 +132,9 @@ void parse_args(int argc, char **argv) {
 	return;
 }
 
+
 int main(int argc, char **argv) {
-	FILE *bin;
-	Elf64_Ehdr *ehr;
+	ELF *bin = malloc(sizeof(ELF));
 
 	parse_args(argc, argv);
 
@@ -137,11 +143,16 @@ int main(int argc, char **argv) {
 	function_list_t *senti = fns;
 #endif
 
-	bin = fopen(argv[argc - 1], "r");
-	ehr = read_header(bin);
-
+	bin->file = fopen(argv[argc - 1], "r");
+	bin->ehr = read_header(bin->file);
+	bin->shr = read_shr_all(bin->file, bin->ehr->e_shnum, 
+			bin->ehr->e_shoff, bin->ehr->e_shentsize);
+	
 	if (PRINT_HEADER_INFO)
-		print_header_info(ehr);
+		print_header_info(bin->ehr);
+
+	if (PRINT_SECTION_HEADERS)
+		print_shr_info_all(bin);
 
 #if FIND_FUNCTIONS
 	while (senti != NULL) {
