@@ -321,10 +321,10 @@ Elf64_Ehdr *read_header(FILE *bin_file) {
 	ehr->e_entry = Elf64_read_addr_le(bin_file);
 
 	/* Read the program header table offset */
-	ehr->e_phoff = Elf64_read_addr_le(bin_file);
+	ehr->e_phoff = Elf64_read_off_le(bin_file);
 
 	/* Read the section header table offset */
-	ehr->e_shoff = Elf64_read_addr_le(bin_file);
+	ehr->e_shoff = Elf64_read_off_le(bin_file);
 
 	/* Read the flags */
 	ehr->e_flags = Elf64_read_word_le(bin_file);

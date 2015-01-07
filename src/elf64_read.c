@@ -45,7 +45,7 @@ Elf64_Word Elf64_read_word_le(FILE *bin_file) {
 }
 
 
-Elf64_Addr Elf64_read_addr_le(FILE *bin_file) {
+Elf64_Xword Elf64_read_xword_le(FILE *bin_file) {
 	Elf64_Word hword = 0, lword = 0;
 	Elf64_Addr addr;
 	hword = Elf64_read_word_le(bin_file);
@@ -55,4 +55,14 @@ Elf64_Addr Elf64_read_addr_le(FILE *bin_file) {
 	printf("ADDR read: %lx\n", addr);
 #endif
 	return addr;
+}
+
+
+Elf64_Off Elf64_read_off_le(FILE *bin_file) {
+	return (Elf64_Off) Elf64_read_xword_le(bin_file);
+}
+
+
+Elf64_Addr Elf64_read_addr_le(FILE *bin_file) {
+	return (Elf64_Addr) Elf64_read_xword_le(bin_file);
 }
