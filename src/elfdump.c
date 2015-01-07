@@ -8,14 +8,9 @@
 #include "header.h"
 #include "retcodes.h"
 
-#define DEBUG			1
+#define	FIND_FUNCTIONS	0
 
-#define OPCODE_CALL		0xE8
-#define OPCODE_RET		0xC3
-
-
-uint64_t program_header_table;
-uint64_t section_header_table;
+#if FIND_FUNCTIONS
 
 typedef struct function_list function_list_t;
 
@@ -77,27 +72,26 @@ function_list_t *find_calls(FILE *bin) {
 	return fns;
 }
 
-#if 0
-
-
-
 #endif
 
-int main(void) {
+int main(int argc, char **argv) {
 	FILE *bin;
 	Elf64_Ehdr *ehr;
-#if 0
+
+#if FIND_FUNCTIONS
 	function_list_t *fns = find_calls(bin);
 	function_list_t *senti = fns;
 #endif
-	bin = fopen("./test", "r");
 
-/*
-	fseek(bin, 0L, SEEK_END);
-	size = ftell(bin.file);
-*/
+	if (argc == 1) {
+		printf("Usage: %s path/to/executable\n", argv[0]);
+		exit(EXIT_NO_ARGUMENT);
+	}
+
+	bin = fopen(argv[1], "r");
 	ehr = read_header(bin);
-#if 0
+
+#if FIND_FUNCTIONS
 	while (senti != NULL) {
 		min = senti->addr;
 		if (senti->next != NULL) {
@@ -110,6 +104,7 @@ int main(void) {
 		senti = senti->next;
 	}
 #endif
+
 	return 0;
 }
 
