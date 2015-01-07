@@ -12,4 +12,13 @@ typedef int32_t  Elf64_Sword;
 typedef uint64_t Elf64_Xword; 	
 typedef int64_t  Elf64_Sxword; 	
 
+/* Defined in binary.h */
+typedef struct ELF_s ELF;
+
+/* Defined in header.h */
+typedef struct Elf64_Ehdr_s Elf64_Ehdr;
+
+/* Defined in section.h */
+typedef struct Elf64_Shdr_s Elf64_Shdr;
+
 #endif

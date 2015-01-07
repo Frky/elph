@@ -3,7 +3,7 @@
 #define __HEADER_H__
 
 #include <stdbool.h>
-#include "binary.h"
+#include <stdio.h>
 #include "types.h"
 
 extern int DEBUG_HEADER;
@@ -51,7 +51,7 @@ extern int DEBUG_HEADER;
 
 extern const unsigned char ELF_MAGIC_NUMBER[4];
 
-typedef struct {
+struct Elf64_Ehdr_s {
 	unsigned char 	e_ident[EI_NIDENT];
 	Elf64_Half	e_type;
 	Elf64_Half	e_machine;
@@ -66,7 +66,7 @@ typedef struct {
 	Elf64_Half	e_shentsize;
 	Elf64_Half	e_shnum;
 	Elf64_Half	e_shstrndx;
-} Elf64_Ehdr;
+}; 
 
 Elf64_Ehdr *read_header(FILE *bin_file);
 void print_header_info(Elf64_Ehdr *ehr);

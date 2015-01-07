@@ -3,8 +3,9 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "types.h"
 #include "header.h"
-#include "binary.h"
+#include "elf64_read.h"
 #include "retcodes.h"
 
 int DEBUG_HEADER = 0;
