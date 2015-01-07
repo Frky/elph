@@ -7,6 +7,8 @@
 #include "binary.h"
 #include "retcodes.h"
 
+int DEBUG_HEADER = 0;
+
 /* Magic number to be read in the first four bytes of the binary */
 const unsigned char ELF_MAGIC_NUMBER[4] = {0x7F, 0x45, 0x4C, 0x46}; 
 
@@ -478,7 +480,7 @@ void print_line_entry(char *entry_name) {
  * @param	ehr Header structure where all info are stored
  *
  */
-void print_binary_info(Elf64_Ehdr *ehr) {
+void print_header_info(Elf64_Ehdr *ehr) {
 
 	size_t i;
 

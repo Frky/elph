@@ -3,12 +3,15 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <getopt.h>
 
 #include "binary.h"
 #include "header.h"
 #include "retcodes.h"
 
 #define	FIND_FUNCTIONS	0
+
+static int PRINT_HEADER_INFO = 0;
 
 #if FIND_FUNCTIONS
 
@@ -74,22 +77,71 @@ function_list_t *find_calls(FILE *bin) {
 
 #endif
 
+
+void parse_args(int argc, char **argv) {
+
+	int c;
+
+	while (1)
+	{
+		static struct option long_options[] =
+		{
+			/* These options set a flag. */
+			{"debug", no_argument, 		&DEBUG_HEADER, 1},
+			{"header", no_argument, 	&PRINT_HEADER_INFO, 1},
+			/* These options don't set a flag.
+			   We distinguish them by their indices. */
+#if 0
+			{"file",    required_argument, 0, 'f'},
+#endif
+			{0, 0, 0, 0}
+		};
+		/* getopt_long stores the option index here. */
+		int option_index = 0;
+
+		c = getopt_long (argc, argv, "dh",
+				long_options, &option_index);
+
+		switch (c) {
+		case 'd':
+			DEBUG_HEADER = 1;
+			break;
+		case 'h':
+			PRINT_HEADER_INFO = 1;
+			break;
+		}
+		/* Detect the end of the options. */
+		if (c == -1)
+			break;
+	}
+
+	/* Check if a file is given as final argument */
+	if (optind != argc - 1)
+	{
+		
+		printf("Usage: %s path/to/executable\n", argv[0]);
+		exit(EXIT_NO_FILE_ARGUMENT);
+	}
+	
+	return;
+}
+
 int main(int argc, char **argv) {
 	FILE *bin;
 	Elf64_Ehdr *ehr;
+
+	parse_args(argc, argv);
 
 #if FIND_FUNCTIONS
 	function_list_t *fns = find_calls(bin);
 	function_list_t *senti = fns;
 #endif
 
-	if (argc == 1) {
-		printf("Usage: %s path/to/executable\n", argv[0]);
-		exit(EXIT_NO_ARGUMENT);
-	}
-
-	bin = fopen(argv[1], "r");
+	bin = fopen(argv[argc - 1], "r");
 	ehr = read_header(bin);
+
+	if (PRINT_HEADER_INFO)
+		print_header_info(ehr);
 
 #if FIND_FUNCTIONS
 	while (senti != NULL) {

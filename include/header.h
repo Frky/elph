@@ -6,8 +6,7 @@
 #include "binary.h"
 #include "types.h"
 
-#define PRINT_ELF_INFO		1
-#define DEBUG_HEADER		0
+extern int DEBUG_HEADER;
 
 #define EI_CLASS		0x04
 #define EI_DATA			0x05
@@ -70,6 +69,6 @@ typedef struct {
 } Elf64_Ehdr;
 
 Elf64_Ehdr *read_header(FILE *bin_file);
-void print_binary_info(Elf64_Ehdr *ehr);
+void print_header_info(Elf64_Ehdr *ehr);
 
 #endif
