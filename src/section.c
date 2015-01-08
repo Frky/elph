@@ -70,7 +70,7 @@ void print_section_name(FILE *bin, unsigned int sh_name_offset) {
     fseek(bin, sh_name_offset, SEEK_SET);
 
     rchar = fgetc(bin);
-    while (rchar != '\0') {
+    while (rchar != '\0' && l < COLUMN_LENGTH) {
         printf("%c", rchar);
         rchar = fgetc(bin);
         l++;
@@ -209,7 +209,7 @@ void print_shr_info(Elf64_Shdr *shr, ELF *bin, int shr_index) {
 	printf("%4u  ", shr->sh_info);
 
  	/* Align */
-	printf("   %u  ", shr->sh_addralign);
+	printf("   %lu  ", shr->sh_addralign);
 
 	printf("\n");
 }
