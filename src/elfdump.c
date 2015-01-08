@@ -8,6 +8,7 @@
 #include "binary.h"
 #include "header.h"
 #include "section.h"
+#include "sym_tab.h"
 #include "retcodes.h"
 
 #define	FIND_FUNCTIONS	0
@@ -147,6 +148,10 @@ int main(int argc, char **argv) {
 	bin->ehr = read_header(bin->file);
 	bin->shr = read_shr_all(bin->file, bin->ehr->e_shnum, 
 			bin->ehr->e_shoff, bin->ehr->e_shentsize);
+
+	Elf64_Off sym_tab_idx = get_section_idx(bin, ".symtab");
+	bin->symtab = read_sym_tab(bin->file, bin->shr[sym_tab_idx], &(bin->symtab_num));
+	print_symtab_info(bin);
 
 	if (PRINT_HEADER_INFO)
 		print_header_info(bin->ehr);

@@ -8,8 +8,8 @@ CC=gcc
 CFLAGS=-W -Wall -Wextra -I $(HDRDIR)
 LDFLAGS=
 
-_DEPS=binary.h elf64_read.h header.h section.h 
-_SRC=elfdump.c elf64_read.c header.c section.c 
+_DEPS=binary.h elf64_read.h header.h section.h sym_tab.h 
+_SRC=elfdump.c elf64_read.c header.c section.c sym_tab.c
 _OBJ=$(_SRC:.c=.o)
 DEPS=$(patsubst %,$(HDRDIR)/%,$(_DEPS))
 OBJ=$(patsubst %,$(OBJDIR)/%,$(_OBJ))

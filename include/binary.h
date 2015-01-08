@@ -11,6 +11,8 @@ struct ELF_s {
 	size_t 	size;
 	Elf64_Ehdr *ehr;
 	Elf64_Shdr **shr;
+	Elf64_Sym **symtab;
+	Elf64_Xword symtab_num;
 };
 
 #endif
