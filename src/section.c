@@ -6,6 +6,7 @@
 #include "section.h"
 #include "types.h"
 
+#define COLUMN_LENGTH	16
 
 Elf64_Shdr *read_section_header(FILE *bin, Elf64_Off offset) {
 	
@@ -60,22 +61,36 @@ Elf64_Shdr **read_shr_all(FILE *bin, Elf64_Half shr_num, Elf64_Off shr_off, Elf6
 }
 
 
-#define COLUMN_LENGTH	16
+char *get_section_name(FILE *bin, Elf64_Shdr *shr, Elf64_Off strtab_offset) {
+	unsigned int offset = strtab_offset + shr->sh_name;
+	char *buffer = malloc(COLUMN_LENGTH * sizeof(char));
+	char *section_name;
+	int name_size = 0;
+
+  	fseek(bin, offset, SEEK_SET);
+    	do { 
+        	buffer[name_size] = fgetc(bin);
+        	name_size++;
+    	} while (buffer[name_size -1] != '\0' && name_size < COLUMN_LENGTH);
+
+	section_name = malloc(name_size * sizeof(char));
+	strcpy(section_name, buffer);
+	return section_name;
+}
 
 
-void print_section_name(FILE *bin, unsigned int sh_name_offset) {
-	int i, l = 0;
-    char rchar;
+Elf64_Half get_section_idx(ELF *bin, char *section_name) {
+	Elf64_Half idx = 0;
+	Elf64_Off stroff = bin->shr[bin->ehr->e_shstrndx]->sh_offset;
+	while (strcmp(section_name, get_section_name(bin->file, bin->shr[idx], stroff)) != 0)
+		idx++;
+	return idx;
+}
 
-    fseek(bin, sh_name_offset, SEEK_SET);
 
-    rchar = fgetc(bin);
-    while (rchar != '\0' && l < COLUMN_LENGTH) {
-        printf("%c", rchar);
-        rchar = fgetc(bin);
-        l++;
-    }
-    
+void print_section_name(char *section_name) {
+	int i, l = strlen(section_name) - 1;
+    	printf("%s", section_name);
 	for (i = l; i < COLUMN_LENGTH; i++) 
 		printf(" ");
 	printf("  ");
@@ -175,13 +190,12 @@ void print_section_flags(Elf64_Xword flags) {
 }
 
 
-/* TODO : temporary giving the whole binary */
 void print_shr_info(Elf64_Shdr *shr, ELF *bin, int shr_index) {
 	/* Section index */
 	printf("  [%2i] ", shr_index);
 
-	/* TODO */
-	print_section_name(bin->file, bin->shr[bin->ehr->e_shstrndx]->sh_offset + shr->sh_name);	
+	/* Section name */
+	print_section_name(get_section_name(bin->file, shr, bin->shr[bin->ehr->e_shstrndx]->sh_offset));
 
 	print_section_type(shr->sh_type);
 

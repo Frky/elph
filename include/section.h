@@ -54,6 +54,8 @@ Elf64_Shdr *read_section_header(FILE *bin, Elf64_Addr addr);
 
 Elf64_Shdr **read_shr_all(FILE *bin, Elf64_Half shr_num, Elf64_Off shr_off, Elf64_Half shr_entrysize);
 
+Elf64_Half get_section_idx(ELF *bin, char *section_name);
+
 void print_shr_info_all(ELF *bin);
 
 #endif
