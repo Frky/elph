@@ -55,24 +55,61 @@ Elf64_Sym **read_sym_tab(FILE *bin, Elf64_Shdr *symtab_hr, Elf64_Xword *nb_entri
 	return symtab;
 }
 
+
+/*
+ * Get the name of a symbol (to be read in the string table)
+ * 
+ * @param	bin		File where to read the info about section header
+ * @param	sym		Pointer to the symbol structure
+ * @param	strtab_offset	Offset (bytes in file) of the string table
+ *
+ * @req		The file pointed by bin must have been previously opened
+ *
+ * @ret		Name of the symbol, terminated with \0
+ *
+ */
 char *get_sym_name(FILE *bin, Elf64_Sym *sym, Elf64_Off strtab_offset) {
+	/* Compute the offset of the symbol name:
+	offset in string table is given by sym->st_name */
 	unsigned int offset = strtab_offset + sym->st_name;
+	/* Buffer to read the chars in file until \0 */
 	char *buffer = malloc(255 * sizeof(char));
+	/* Symbol name */
 	char *sym_name;
+	/* Name length */
 	int name_size = 0;
 
+	/* Seek the file to the first char of the name */
   	fseek(bin, offset, SEEK_SET);
+
+	/* Read characters one by one, until \0 or 
+	reach MAX length */
     	do { 
         	buffer[name_size] = fgetc(bin);
         	name_size++;
     	} while (buffer[name_size -1] != '\0' && name_size < 255);
 
+	/* Put \0 at then end of the buffer, in case we reached the 
+	MAX length */
+	buffer[name_size - 1] = '\0';
+	/* Allocate symbol name string */
 	sym_name = malloc(name_size * sizeof(char));
+	/* Copy name */
 	strcpy(sym_name, buffer);
+	/* Free buffer */
+	free(buffer);
+
 	return sym_name;
 }
 
 
+/*
+ * Print symbol type on 8 columns 
+ * The print is done on stdout
+ * 
+ * @param	st_type	Type of the symbol
+ *
+ */
 void print_sym_type(unsigned char st_type) {
 	size_t i, l;
 	switch (st_type) {
@@ -118,6 +155,13 @@ void print_sym_type(unsigned char st_type) {
 }
 
 
+/*
+ * Print symbol binding on 7 columns 
+ * The print is done on stdout
+ * 
+ * @param	st_bind	Binding of the symbol
+ *
+ */
 void print_sym_bind(unsigned char st_bind) {
 	size_t i, l;
 	switch (st_bind) {
@@ -155,8 +199,15 @@ void print_sym_bind(unsigned char st_bind) {
 }
 
 
-void print_sym_idx(Elf64_Half s_idx) {
-	switch (s_idx) {
+/*
+ * Print symbol idx on 3 columns 
+ * The print is done on stdout
+ * 
+ * @param	st_idx	Index of the symbol
+ *
+ */
+void print_sym_idx(Elf64_Half st_idx) {
+	switch (st_idx) {
 	case SHN_UNDEF:
 		printf("UND ");
 		break;
@@ -167,12 +218,22 @@ void print_sym_idx(Elf64_Half s_idx) {
 		printf("COM ");
 		break;
 	default:
-		printf("%3u ", s_idx);
+		printf("%3u ", st_idx);
 	}
 
 	return;
 }
 
+
+/*
+ * Print symbol information 
+ * The print is done on stdout
+ * 
+ * @param	sym	Symbol to be printed
+ * @param	s_ndx	Symbol index
+ * @param	s_name	Symbol name
+ *
+ */
 void print_symtab_entry(Elf64_Sym *sym, Elf64_Half s_ndx, char *s_name) {
 	printf("    ");
 	/* Symbol index */
@@ -194,6 +255,14 @@ void print_symtab_entry(Elf64_Sym *sym, Elf64_Half s_ndx, char *s_name) {
 	return;
 }
 
+
+/*
+ * Print all symbols information 
+ * The print is done on stdout
+ * 
+ * @param	bin	Binary structure
+ *
+ */
 void print_symtab_info(ELF *bin) {
 	size_t i;
 	char *s_name;
