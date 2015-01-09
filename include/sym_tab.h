@@ -34,6 +34,8 @@ struct Elf64_Sym_s {
 
 Elf64_Sym **read_sym_tab(FILE *bin, Elf64_Shdr *symtab_hr, Elf64_Xword *nb_entries);
 
+char *get_sym_name(FILE *bin, Elf64_Sym *sym, Elf64_Off strtab_offset);
+
 void print_sym_info(ELF *bin);
 
 #endif

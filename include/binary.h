@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include "header.h"
 #include "section.h"
+#include "fdetect.h"
 
 struct ELF_s {
 	FILE *file;
@@ -17,6 +18,8 @@ struct ELF_s {
 	Elf64_Sym **dynsym;
 	Elf64_Xword dynsym_idx;
 	Elf64_Xword dynsym_num;
+	Elf64_Func **ftab;
+	Elf64_Xword ftab_num;
 };
 
 #endif

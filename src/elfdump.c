@@ -9,6 +9,7 @@
 #include "header.h"
 #include "section.h"
 #include "sym_tab.h"
+#include "fdetect.h"
 #include "retcodes.h"
 
 #define	FIND_FUNCTIONS	0
@@ -16,6 +17,7 @@
 static int PRINT_HEADER_INFO = 0;
 static int PRINT_SECTION_HEADERS = 0;
 static int PRINT_SYMBOLS = 0;
+static int PRINT_FUNCS = 0;
 
 #if FIND_FUNCTIONS
 
@@ -95,6 +97,7 @@ void parse_args(int argc, char **argv) {
 			{"header", no_argument, 	&PRINT_HEADER_INFO, 1},
 			{"sections", no_argument, 	&PRINT_SECTION_HEADERS, 1},
 			{"symbols", no_argument, 	&PRINT_SYMBOLS, 1},
+			{"functions", no_argument, 	&PRINT_FUNCS, 1},
 			/* These options don't set a flag.
 			   We distinguish them by their indices. */
 #if 0
@@ -105,7 +108,7 @@ void parse_args(int argc, char **argv) {
 		/* getopt_long stores the option index here. */
 		int option_index = 0;
 
-		c = getopt_long (argc, argv, "dhsS",
+		c = getopt_long (argc, argv, "dhsSf",
 				long_options, &option_index);
 
 		switch (c) {
@@ -120,6 +123,9 @@ void parse_args(int argc, char **argv) {
 			break;
 		case 'S':
 			PRINT_SECTION_HEADERS = 1;
+			break;
+		case 'f':
+			PRINT_FUNCS = 1;
 			break;
 		}
 		/* Detect the end of the options. */
@@ -163,6 +169,8 @@ int main(int argc, char **argv) {
 	bin->dynsym = read_sym_tab(bin->file, bin->shr[bin->dynsym_idx], 
 							&(bin->dynsym_num));
 
+	bin->ftab = get_func(bin);
+
 	if (PRINT_HEADER_INFO)
 		print_header_info(bin->ehr);
 
@@ -171,6 +179,9 @@ int main(int argc, char **argv) {
 
 	if (PRINT_SYMBOLS)
 		print_sym_info(bin);
+
+	if (PRINT_FUNCS)
+		print_func_info(bin->ftab, bin->ftab_num);
 
 #if FIND_FUNCTIONS
 	while (senti != NULL) {

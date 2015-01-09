@@ -24,4 +24,7 @@ typedef struct Elf64_Shdr_s Elf64_Shdr;
 /* Defined in sym_tab.h */
 typedef struct Elf64_Sym_s Elf64_Sym;
 
+/* Defined in fdetect.h */
+typedef struct Elf64_Func_s Elf64_Func;
+
 #endif
