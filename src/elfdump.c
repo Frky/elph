@@ -15,6 +15,7 @@
 
 static int PRINT_HEADER_INFO = 0;
 static int PRINT_SECTION_HEADERS = 0;
+static int PRINT_SYMBOLS = 0;
 
 #if FIND_FUNCTIONS
 
@@ -92,7 +93,8 @@ void parse_args(int argc, char **argv) {
 			/* These options set a flag. */
 			{"debug", no_argument, 		&DEBUG_HEADER, 1},
 			{"header", no_argument, 	&PRINT_HEADER_INFO, 1},
-			{"sections", no_argument, 		&PRINT_SECTION_HEADERS, 1},
+			{"sections", no_argument, 	&PRINT_SECTION_HEADERS, 1},
+			{"symbols", no_argument, 	&PRINT_SYMBOLS, 1},
 			/* These options don't set a flag.
 			   We distinguish them by their indices. */
 #if 0
@@ -103,7 +105,7 @@ void parse_args(int argc, char **argv) {
 		/* getopt_long stores the option index here. */
 		int option_index = 0;
 
-		c = getopt_long (argc, argv, "dhS",
+		c = getopt_long (argc, argv, "dhsS",
 				long_options, &option_index);
 
 		switch (c) {
@@ -112,6 +114,9 @@ void parse_args(int argc, char **argv) {
 			break;
 		case 'h':
 			PRINT_HEADER_INFO = 1;
+			break;
+		case 's':
+			PRINT_SYMBOLS = 1;
 			break;
 		case 'S':
 			PRINT_SECTION_HEADERS = 1;
@@ -149,15 +154,23 @@ int main(int argc, char **argv) {
 	bin->shr = read_shr_all(bin->file, bin->ehr->e_shnum, 
 			bin->ehr->e_shoff, bin->ehr->e_shentsize);
 
-	Elf64_Off sym_tab_idx = get_section_idx(bin, ".symtab");
-	bin->symtab = read_sym_tab(bin->file, bin->shr[sym_tab_idx], &(bin->symtab_num));
-	print_symtab_info(bin);
+	bin->symtab_idx = get_section_idx(bin, ".symtab");
+	bin->symtab = read_sym_tab(bin->file, bin->shr[bin->symtab_idx], 
+							&(bin->symtab_num));
+
+
+	bin->dynsym_idx = get_section_idx(bin, ".dynsym");
+	bin->dynsym = read_sym_tab(bin->file, bin->shr[bin->dynsym_idx], 
+							&(bin->dynsym_num));
 
 	if (PRINT_HEADER_INFO)
 		print_header_info(bin->ehr);
 
 	if (PRINT_SECTION_HEADERS)
 		print_shr_info_all(bin);
+
+	if (PRINT_SYMBOLS)
+		print_sym_info(bin);
 
 #if FIND_FUNCTIONS
 	while (senti != NULL) {

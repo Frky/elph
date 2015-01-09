@@ -256,6 +256,40 @@ void print_symtab_entry(Elf64_Sym *sym, Elf64_Half s_ndx, char *s_name) {
 }
 
 
+void print_symtab(ELF *bin, char *s_name) {
+	unsigned int nb_sym;
+	size_t i;
+	Elf64_Sym **tab;
+	Elf64_Half strtab_idx;
+	Elf64_Off strtab_offset;
+
+
+	if (strcmp(s_name, ".dynsym") == 0) {
+		nb_sym = bin->dynsym_num;
+		tab = bin->dynsym;
+ 		strtab_idx = get_section_idx (bin, ".dynstr");
+	} else if (strcmp(s_name, ".symtab") == 0) {
+		nb_sym = bin->symtab_num;
+		tab = bin->symtab;
+ 		strtab_idx = get_section_idx (bin, ".strtab");
+	} else {
+		return;
+	}
+	
+	strtab_offset = bin->shr[strtab_idx]->sh_offset;
+
+	printf("\nSymbol table '%s' contains %u entries:\n", s_name, nb_sym);
+	printf("   Num:    Value          Size Type    Bind   Ndx Name\n");
+
+	for (i = 0; i < nb_sym; i++) {
+		s_name = get_sym_name(bin->file, tab[i], strtab_offset);
+		print_symtab_entry(tab[i], i, s_name);
+	}
+
+	return;
+}
+
+
 /*
  * Print all symbols information 
  * The print is done on stdout
@@ -263,18 +297,10 @@ void print_symtab_entry(Elf64_Sym *sym, Elf64_Half s_ndx, char *s_name) {
  * @param	bin	Binary structure
  *
  */
-void print_symtab_info(ELF *bin) {
-	size_t i;
-	char *s_name;
-	Elf64_Half strtab_idx = get_section_idx (bin, ".strtab");
-	Elf64_Off strtab_offset = bin->shr[strtab_idx]->sh_offset;
-
-	printf("   Num:    Value          Size Type    Bind   Ndx Name\n");
-
-	for (i = 0; i < bin->symtab_num; i++) {
-		s_name = get_sym_name(bin->file, bin->symtab[i], strtab_offset);
-		print_symtab_entry(bin->symtab[i], i, s_name);
-	}
+void print_sym_info(ELF *bin) {
+	/* Print dynsym tab */
+	print_symtab(bin, ".dynsym"); //, strtab_offset);
+	print_symtab(bin, ".symtab"); //, strtab_offset);
 
 	return;
 }

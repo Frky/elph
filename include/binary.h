@@ -12,7 +12,11 @@ struct ELF_s {
 	Elf64_Ehdr *ehr;
 	Elf64_Shdr **shr;
 	Elf64_Sym **symtab;
+	Elf64_Xword symtab_idx;
 	Elf64_Xword symtab_num;
+	Elf64_Sym **dynsym;
+	Elf64_Xword dynsym_idx;
+	Elf64_Xword dynsym_num;
 };
 
 #endif
