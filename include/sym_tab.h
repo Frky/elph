@@ -5,6 +5,24 @@
 #include <stdio.h>
 #include "types.h"
 
+#define STB_LOCAL	0x0
+#define STB_GLOBAL	0x1
+#define STB_WEAK	0x2
+#define STB_LOOS	0xA
+#define STB_HIOS	0xC
+#define STB_LOPROC	0xD
+#define STB_HIPROC	0xF
+
+#define STT_NOTYPE	0x0
+#define STT_OBJECT	0x1
+#define STT_FUNC	0x2
+#define STT_SECTION	0x3
+#define STT_FILE	0x4
+#define STT_LOOS	0xA
+#define STT_HIOS	0xC
+#define STT_LOPROC	0xD
+#define STT_HIPROC	0xF
+
 struct Elf64_Sym_s {
 	Elf64_Word st_name; 		/* Symbol name */
 	unsigned char st_info; 		/* Type and Binding attributes */
