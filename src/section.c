@@ -91,9 +91,8 @@ Elf64_Half get_section_idx(ELF *bin, char *section_name) {
 void print_section_name(char *section_name) {
 	int i, l = strlen(section_name) - 1;
     	printf("%s", section_name);
-	for (i = l; i < COLUMN_LENGTH; i++) 
+	for (i = l; i < COLUMN_LENGTH + 1; i++) 
 		printf(" ");
-	printf("  ");
 }
 
 
@@ -167,9 +166,8 @@ void print_section_type(Elf64_Word type) {
     default:
         l = 0;
 	}
-	for (i = l + 1; i < COLUMN_LENGTH; i++) 
+	for (i = l; i < COLUMN_LENGTH; i++) 
 		printf(" ");
-	printf("  ");
 }
 
 
@@ -186,7 +184,7 @@ void print_section_flags(Elf64_Xword flags) {
 		printf("X");
 	else
 		printf(" ");
-	printf("   ");
+	printf(" ");
 }
 
 
@@ -200,30 +198,28 @@ void print_shr_info(Elf64_Shdr *shr, ELF *bin, int shr_index) {
 	print_section_type(shr->sh_type);
 
 	/* Section address */
-	printf("%016lx  ", shr->sh_addr);
+	printf("%08x ", (Elf64_Word) shr->sh_addr);
 
 	/* Section offset */
-	printf("%08x  ", (unsigned int) shr->sh_offset);
-
-	printf("\n");
+	printf("%06x ", (Elf64_Word) shr->sh_offset);
 
 	/* Section size */
-	printf("       %016lx  ", shr->sh_size);
+	printf("%06x ", (Elf64_Word) shr->sh_size);
 
 	/* Entry size */
-	printf("%016lx  ", shr->sh_entsize);
+	printf("%02x ", (unsigned char) shr->sh_entsize);
 
 	/* FLAGS */
 	print_section_flags(shr->sh_flags);
 
 	/* Link */
-	printf("%4u  ", shr->sh_link);
+	printf("%2u ", shr->sh_link);
 
     	/* Info */
-	printf("%4u  ", shr->sh_info);
+	printf("%2u ", shr->sh_info);
 
  	/* Align */
-	printf("   %lu  ", shr->sh_addralign);
+	printf("%2u", (unsigned char) shr->sh_addralign);
 
 	printf("\n");
 }
@@ -237,8 +233,7 @@ void print_shr_info_all(ELF *bin) {
 		bin->ehr->e_shnum, bin->ehr->e_shoff);
 	printf("\n");
 	printf("Section Headers:\n");
-	printf("  [Nr] Name              Type             Address           Offset\n");
-	printf("       Size              EntSize          Flags  Link  Info  Align\n");
+	printf("  [Nr] Name              Type            Addr     Off    Size   ES Flg Lk Inf Al\n");
 
 	for (i = 0; i < bin->ehr->e_shnum; i++) {
 		print_shr_info(bin->shr[i], bin, i);
