@@ -264,8 +264,8 @@ void print_section_type(Elf64_Word s_type) {
 		printf("HIPROC");
 		l = 6;
 		break;
-    default:
-        l = 0;
+    	default:
+        	l = 0;
 	}
 	for (i = l; i < COLUMN_TYPE_LENGTH; i++) 
 		printf(" ");
@@ -339,7 +339,7 @@ void print_shr_info(Elf64_Shdr *shr, ELF *bin, int shr_index) {
 	printf("%2u ", shr->sh_link);
 
     	/* Info */
-	printf("%2u ", shr->sh_info);
+	printf("%3u ", shr->sh_info);
 
  	/* Align */
 	printf("%2u", (unsigned char) shr->sh_addralign);
@@ -357,7 +357,6 @@ void print_shr_info(Elf64_Shdr *shr, ELF *bin, int shr_index) {
  */
 void print_shr_info_all(ELF *bin) {
 	size_t i;
-
 	printf("There are %d section headers, starting at offset 0x%lx:\n", 
 		bin->ehr->e_shnum, bin->ehr->e_shoff);
 	printf("\n");
