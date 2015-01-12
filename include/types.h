@@ -27,4 +27,7 @@ typedef struct Elf64_Sym_s Elf64_Sym;
 /* Defined in fdetect.h */
 typedef struct Elf64_Func_s Elf64_Func;
 
+/* Defined in Elf64_program_header.h */
+typedef struct Elf64_Phdr_s Elf64_Phdr;
+
 #endif

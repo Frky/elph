@@ -8,6 +8,7 @@
 #include "binary.h"
 #include "header.h"
 #include "section.h"
+#include "elf64_program_header.h"
 #include "sym_tab.h"
 #include "fdetect.h"
 #include "retcodes.h"
@@ -16,6 +17,7 @@
 
 static int PRINT_HEADER_INFO = 0;
 static int PRINT_SECTION_HEADERS = 0;
+static int PRINT_PROGRAM_HEADERS = 0;
 static int PRINT_SYMBOLS = 0;
 static int PRINT_FUNCS = 0;
 
@@ -96,6 +98,7 @@ void parse_args(int argc, char **argv) {
 			{"debug", no_argument, 		&DEBUG_HEADER, 1},
 			{"header", no_argument, 	&PRINT_HEADER_INFO, 1},
 			{"sections", no_argument, 	&PRINT_SECTION_HEADERS, 1},
+			{"segments", no_argument, 	&PRINT_PROGRAM_HEADERS, 1},
 			{"symbols", no_argument, 	&PRINT_SYMBOLS, 1},
 			{"functions", no_argument, 	&PRINT_FUNCS, 1},
 			/* These options don't set a flag.
@@ -108,7 +111,7 @@ void parse_args(int argc, char **argv) {
 		/* getopt_long stores the option index here. */
 		int option_index = 0;
 
-		c = getopt_long (argc, argv, "dhsSf",
+		c = getopt_long (argc, argv, "dhslSf",
 				long_options, &option_index);
 
 		switch (c) {
@@ -123,6 +126,9 @@ void parse_args(int argc, char **argv) {
 			break;
 		case 'S':
 			PRINT_SECTION_HEADERS = 1;
+			break;
+		case 'l':
+			PRINT_PROGRAM_HEADERS = 1;
 			break;
 		case 'f':
 			PRINT_FUNCS = 1;
@@ -159,6 +165,8 @@ int main(int argc, char **argv) {
 	bin->ehr = read_header(bin->file);
 	bin->shr = read_shr_all(bin->file, bin->ehr->e_shnum, 
 			bin->ehr->e_shoff, bin->ehr->e_shentsize);
+	bin->phr = Elf64_read_phr_all(bin->file, bin->ehr->e_phnum, 
+			bin->ehr->e_phoff, bin->ehr->e_phentsize);
 
 	bin->symtab_idx = get_section_idx(bin, ".symtab");
 	bin->symtab = read_sym_tab(bin->file, bin->shr[bin->symtab_idx], 
@@ -176,6 +184,9 @@ int main(int argc, char **argv) {
 
 	if (PRINT_SECTION_HEADERS)
 		print_shr_info_all(bin);
+
+	if (PRINT_PROGRAM_HEADERS)
+		Elf64_print_phr_info(bin);
 
 	if (PRINT_SYMBOLS)
 		print_sym_info(bin);
