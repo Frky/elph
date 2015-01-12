@@ -69,20 +69,19 @@ Elf64_Shdr *read_section_header(FILE *bin, Elf64_Off offset) {
 
 
 /*
- * Read all header sections in binary file. Allocates an array of section headers
- * and fill it with read sectin headers. 
+ * Read all section headers in binary file. Allocates an array of section headers
+ * and fill it with read section headers. 
  * 
  * @param	bin		File where to read the section headers table
  * @param	shr_num		Number of section headers in the file
  * @param	shr_off		Offset of the section header table (in bytes 
 				into file)
- * @param	shr_entry_size	Number of entries in section header table (in
+ * @param	shr_entrysize	Number of entries in section header table (in
 				bytes into file)
  *
  * @req		The file pointed by bin must have been previously opened
  *
  * @ret		Array of section headers allocated and filled with read info
- *		filled with read info	
  *
  */
 Elf64_Shdr **read_shr_all(FILE *bin, Elf64_Half shr_num, Elf64_Off shr_off, Elf64_Half shr_entrysize) {
