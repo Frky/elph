@@ -6,7 +6,7 @@
 #include <getopt.h>
 
 #include "binary.h"
-#include "header.h"
+#include "elf64_hdr.h"
 #include "elf64_shr.h"
 #include "elf64_phr.h"
 #include "sym_tab.h"

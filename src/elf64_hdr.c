@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #include "types.h"
-#include "header.h"
+#include "elf64_hdr.h"
 #include "elf64_read.h"
 #include "retcodes.h"
 

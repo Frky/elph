@@ -15,7 +15,7 @@ typedef int64_t  Elf64_Sxword;
 /* Defined in binary.h */
 typedef struct ELF_s ELF;
 
-/* Defined in header.h */
+/* Defined in elf64_hdr.h */
 typedef struct Elf64_Ehdr_s Elf64_Ehdr;
 
 /* Defined in elf64_shr.h */

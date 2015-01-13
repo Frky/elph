@@ -3,7 +3,7 @@
 #define __BINARY_H__
 
 #include <stdio.h>
-#include "header.h"
+#include "elf64_hdr.h"
 #include "elf64_shr.h"
 #include "fdetect.h"
 
