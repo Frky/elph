@@ -161,7 +161,7 @@ int main(int argc, char **argv) {
 	function_list_t *senti = fns;
 #endif
 
-	bin->file = fopen(argv[argc - 1], "r");
+	bin->file = fopen(argv[argc - 1], "r+");
 	bin->ehr = read_header(bin->file);
 	bin->shr = read_shr_all(bin->file, bin->ehr->e_shnum, 
 			bin->ehr->e_shoff, bin->ehr->e_shentsize);
@@ -178,6 +178,8 @@ int main(int argc, char **argv) {
 							&(bin->dynsym_num));
 
 	bin->ftab = get_func(bin);
+
+	Elf64_write_shr_all(bin);
 
 	if (PRINT_HEADER_INFO)
 		print_header_info(bin->ehr);
@@ -207,6 +209,8 @@ int main(int argc, char **argv) {
 		senti = senti->next;
 	}
 #endif
+
+	fclose(bin->file);
 
 	return 0;
 }

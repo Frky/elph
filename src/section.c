@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "elf64_read.h"
+#include "elf64_write.h"
 #include "section.h"
 #include "types.h"
 
@@ -27,43 +28,30 @@
  *
  */
 Elf64_Shdr *read_section_header(FILE *bin, Elf64_Off offset) {
-	
 	/* Seek to the beginning of the section header */
 	fseek(bin, offset, SEEK_SET);
-
 	/* Allocate a section header */
 	Elf64_Shdr *shr = malloc(sizeof(Elf64_Shdr));
-
 	/* Read section name index in setion name table */
 	shr->sh_name = Elf64_read_word_le(bin);
-
 	/* Read section type */
 	shr->sh_type = Elf64_read_word_le(bin);
-
 	/* Read section flags */
 	shr->sh_flags = Elf64_read_xword_le(bin);
-
 	/* Read section addr in memory */
 	shr->sh_addr = Elf64_read_addr_le(bin);
-
 	/* Read section offset in file */
 	shr->sh_offset = Elf64_read_off_le(bin);
-
 	/* Read section size */
 	shr->sh_size = Elf64_read_xword_le(bin);
-
 	/* Read link to next section */
 	shr->sh_link = Elf64_read_word_le(bin);
-
 	/* Read section information */
 	shr->sh_info = Elf64_read_word_le(bin);
-
 	/* Read address alignment boundary */
 	shr->sh_addralign = Elf64_read_xword_le(bin);
-
 	/* Read size of entries in this section */
 	shr->sh_entsize = Elf64_read_xword_le(bin);
-
 	return shr;
 }
 
@@ -98,6 +86,48 @@ Elf64_Shdr **read_shr_all(FILE *bin, Elf64_Half shr_num, Elf64_Off shr_off, Elf6
 		offset += shr_entrysize;
 	}
 	return shr_tab;
+}
+
+
+void Elf64_write_shr(FILE *bin, Elf64_Shdr *shr, Elf64_Off offset) {
+	/* Seek to the beginning of the section header */
+	fseek(bin, offset, SEEK_SET);
+	/* Write section name index in section name table */
+	Elf64_write_word_le(bin, shr->sh_name);
+	/* Write section type */
+	Elf64_write_word_le(bin, shr->sh_type);
+	/* Write section flags */
+	Elf64_write_xword_le(bin, shr->sh_flags);
+	/* Write section addr in memory */
+	Elf64_write_addr_le(bin, shr->sh_addr);
+	/* Write section offset in file */
+	Elf64_write_off_le(bin, shr->sh_offset);
+	/* Write section size */
+ 	Elf64_write_xword_le(bin, shr->sh_size);
+	/* Write link to next section */
+	Elf64_write_word_le(bin, shr->sh_link);
+	/* Write section information */
+	Elf64_write_word_le(bin, shr->sh_info);
+	/* Write address alignment boundary */
+	Elf64_write_xword_le(bin, shr->sh_addralign);
+	/* Write size of entries in this section */
+	Elf64_write_xword_le(bin, shr->sh_entsize);
+	return;
+}
+
+
+void Elf64_write_shr_all(ELF *bin) {
+	size_t i;
+	/* Offset of a given section header (bytes into file) */
+	Elf64_Off offset = 0;
+	/* Write the section headers one by one */
+	for (i = 0; i < bin->ehr->e_shnum; i++) {
+		Elf64_write_shr(bin->file, bin->shr[i], bin->ehr->e_shoff + offset);
+		/* The offset of the next section header is current_offset 
+		   plus the size of a section header (that was just read */
+		offset += bin->ehr->e_shentsize;
+	}
+	return;
 }
 
 

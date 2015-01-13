@@ -50,7 +50,10 @@ struct Elf64_Shdr_s {
 	Elf64_Xword sh_entsize; 	/* Size of entries, if section has table */
 };
 
-Elf64_Shdr *read_section_header(FILE *bin, Elf64_Addr addr);
+
+void Elf64_write_shr(FILE *bin, Elf64_Shdr *shr, Elf64_Off offset);
+
+void Elf64_write_shr_all(ELF *bin);
 
 Elf64_Shdr **read_shr_all(FILE *bin, Elf64_Half shr_num, Elf64_Off shr_off, Elf64_Half shr_entrysize);
 
