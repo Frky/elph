@@ -41,6 +41,11 @@ Elf64_Xword get_func_num(ELF *bin) {
 }
 
 
+Elf64_Off get_func_offset(ELF *bin, Elf64_Addr f_addr, Elf64_Sym *sym) {
+	Elf64_Shdr *shr = bin->shr[sym->st_shndx];
+	return shr->sh_offset + (f_addr - shr->sh_addr);
+}
+
 /*
  * Get the functions information (such as address and name) 
  * 
@@ -76,6 +81,9 @@ Elf64_Func **get_func(ELF *bin) {
 			funcs[j] = malloc(sizeof(Elf64_Func));
 			/* Get the address of the function */
 			funcs[j]->f_addr = (Elf64_Off) bin->symtab[i]->st_value;
+			/* Get the offset of the function in file */
+			funcs[j]->f_offset = get_func_offset(bin, funcs[j]->f_addr, 
+								bin->symtab[i]);
 			/* Get the name of the function */
 			funcs[j]->f_name = get_sym_name(bin->file, bin->symtab[i], 
 						strtab_offset);
@@ -101,7 +109,7 @@ void print_func_info(Elf64_Func **funcs, Elf64_Xword f_num) {
 	size_t i;
 	printf("%lu functions found in this binary:\n", f_num);
 	for (i = 0; i < f_num; i++) {
-		printf("%s: %08x\n", funcs[i]->f_name, (Elf64_Word) funcs[i]->f_addr);
+		printf("%s: %08x (at offset 0x%06x)\n", funcs[i]->f_name, (Elf64_Word) funcs[i]->f_addr, (Elf64_Word) funcs[i]->f_offset);
 	}
 	return;
 }
