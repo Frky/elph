@@ -8,7 +8,7 @@
 #include "binary.h"
 #include "header.h"
 #include "elf64_shr.h"
-#include "elf64_program_header.h"
+#include "elf64_phr.h"
 #include "sym_tab.h"
 #include "fdetect.h"
 #include "retcodes.h"

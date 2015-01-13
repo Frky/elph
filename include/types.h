@@ -18,7 +18,7 @@ typedef struct ELF_s ELF;
 /* Defined in header.h */
 typedef struct Elf64_Ehdr_s Elf64_Ehdr;
 
-/* Defined in section.h */
+/* Defined in elf64_shr.h */
 typedef struct Elf64_Shdr_s Elf64_Shdr;
 
 /* Defined in sym_tab.h */
@@ -27,7 +27,7 @@ typedef struct Elf64_Sym_s Elf64_Sym;
 /* Defined in fdetect.h */
 typedef struct Elf64_Func_s Elf64_Func;
 
-/* Defined in Elf64_program_header.h */
+/* Defined in elf64_phr.h */
 typedef struct Elf64_Phdr_s Elf64_Phdr;
 
 #endif

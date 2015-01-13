@@ -1,6 +1,7 @@
 
 #include <stdlib.h>
-#include "elf64_program_header.h"
+
+#include "elf64_phr.h"
 #include "types.h"
 #include "binary.h"
 #include "elf64_read.h"
