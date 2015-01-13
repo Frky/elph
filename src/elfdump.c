@@ -7,7 +7,7 @@
 
 #include "binary.h"
 #include "header.h"
-#include "section.h"
+#include "elf64_shr.h"
 #include "elf64_program_header.h"
 #include "sym_tab.h"
 #include "fdetect.h"

@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
+#include "elf64_shr.h"
+#include "types.h"
 #include "elf64_read.h"
 #include "elf64_write.h"
-#include "section.h"
-#include "types.h"
 
 /* Number of columns for displaying a section name and type.
    Used to padd strings with " " for displaying alignment. */
@@ -27,7 +28,7 @@
  *		filled with read info	
  *
  */
-Elf64_Shdr *read_section_header(FILE *bin, Elf64_Off offset) {
+Elf64_Shdr *read_shr(FILE *bin, Elf64_Off offset) {
 	/* Seek to the beginning of the section header */
 	fseek(bin, offset, SEEK_SET);
 	/* Allocate a section header */
@@ -80,7 +81,7 @@ Elf64_Shdr **read_shr_all(FILE *bin, Elf64_Half shr_num, Elf64_Off shr_off, Elf6
 	size_t i;
 	/* Read the section headers one by one */
 	for (i = 0; i < shr_num; i++) {
-		shr_tab[i] = read_section_header(bin, shr_off + offset);
+		shr_tab[i] = read_shr(bin, shr_off + offset);
 		/* The offset of the next section header is current_offset 
 		   plus the size of a section header (that was just read */
 		offset += shr_entrysize;

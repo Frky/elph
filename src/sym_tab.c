@@ -2,9 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "elf64_read.h"
-#include "section.h"
 #include "sym_tab.h"
+#include "types.h"
+#include "elf64_read.h"
+#include "elf64_shr.h"
 
 
 /*

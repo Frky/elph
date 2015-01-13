@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include "header.h"
-#include "section.h"
+#include "elf64_shr.h"
 #include "fdetect.h"
 
 struct ELF_s {
