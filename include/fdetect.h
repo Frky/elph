@@ -3,7 +3,7 @@
 #define __FDETECT_H__
 
 #include "types.h"
-#include "binary.h"
+#include "elf64.h"
 
 struct Elf64_Func_s {
 	char *f_name;

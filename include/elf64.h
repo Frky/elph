@@ -23,4 +23,6 @@ struct ELF_s {
 	Elf64_Xword ftab_num;
 };
 
+ELF *elf64_read(char *e_fname);
+
 #endif

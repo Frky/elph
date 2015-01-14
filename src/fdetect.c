@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "fdetect.h"
 #include "types.h"
-#include "binary.h"
+#include "elf64.h"
 #include "sym_tab.h"
 
 
