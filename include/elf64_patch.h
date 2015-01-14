@@ -5,8 +5,6 @@
 #include "types.h"
 #include "elf64_shr.h"
 
-void Elf64_target(ELF *bin);
-
-void Elf64_patch_note(ELF *bin, unsigned char *pl, Elf64_Half *pl_size);
+void Elf64_patch_note(ELF *bin, unsigned char *pl, Elf64_Half *pl_size, char *out_fname);
 
 #endif

@@ -26,6 +26,7 @@ static int PATCH_NOTE = 0;
 static int JMP_ENTRY = 0;
 
 char *pl_fname;
+char *out_fname = NULL;
 
 void parse_args(int argc, char **argv) {
 
@@ -43,6 +44,7 @@ void parse_args(int argc, char **argv) {
 			{"symbols", no_argument, 	&PRINT_SYMBOLS, 1},
 			{"functions", no_argument, 	&PRINT_FUNCS, 1},
 			{"payload", required_argument, 	&PATCH_NOTE, 1},
+			{"output", required_argument, 	0, 0},
 			/* These options don't set a flag.
 			   We distinguish them by their indices. */
 			{0, 0, 0, 0}
@@ -50,7 +52,7 @@ void parse_args(int argc, char **argv) {
 		/* getopt_long stores the option index here. */
 		int option_index = 0;
 
-		c = getopt_long (argc, argv, "dhslSfp:j",
+		c = getopt_long (argc, argv, "dhslSfp:jo:",
 				long_options, &option_index);
 
 		switch (c) {
@@ -80,6 +82,10 @@ void parse_args(int argc, char **argv) {
 			pl_fname = malloc(strlen(optarg));
 			strcpy(pl_fname, optarg);
 			break;
+		case 'o':
+			out_fname = malloc(strlen(optarg));
+			strcpy(out_fname, optarg);
+			break;
 		}
 		/* Detect the end of the options. */
 		if (c == -1)
@@ -101,6 +107,11 @@ void parse_args(int argc, char **argv) {
 int main(int argc, char **argv) {
 
 	parse_args(argc, argv);
+
+	if (out_fname == NULL) {
+		out_fname = malloc(8 * sizeof(char));
+		strcpy(out_fname, "patched");
+	}
 
 	ELF *bin = elf64_read(argv[argc - 1]);
 	bin->ftab = get_func(bin);
@@ -125,7 +136,7 @@ int main(int argc, char **argv) {
 		unsigned char *pl = get_payload(pl_fname, &pl_size);
 		if (JMP_ENTRY)
 			pl = Elf64le_add_jmp_entry_pl(pl, bin->ehr->e_entry, &pl_size);
-		Elf64_patch_note(bin, pl, &pl_size);
+		Elf64_patch_note(bin, pl, &pl_size, out_fname);
 	}
 
 	fclose(bin->file);
