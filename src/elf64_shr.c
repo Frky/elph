@@ -117,16 +117,17 @@ void Elf64_write_shr(FILE *bin, Elf64_Shdr *shr, Elf64_Off offset) {
 }
 
 
-void Elf64_write_shr_all(ELF *bin) {
+void Elf64_write_shr_all(FILE *bin, Elf64_Shdr **shr_tab, Elf64_Half shr_num, 
+				Elf64_Off shr_off, Elf64_Half shr_entrysize) {
 	size_t i;
 	/* Offset of a given section header (bytes into file) */
 	Elf64_Off offset = 0;
 	/* Write the section headers one by one */
-	for (i = 0; i < bin->ehr->e_shnum; i++) {
-		Elf64_write_shr(bin->file, bin->shr[i], bin->ehr->e_shoff + offset);
+	for (i = 0; i < shr_num; i++) {
+		Elf64_write_shr(bin, shr_tab[i], shr_off + offset);
 		/* The offset of the next section header is current_offset 
 		   plus the size of a section header (that was just read */
-		offset += bin->ehr->e_shentsize;
+		offset += shr_entrysize;
 	}
 	return;
 }

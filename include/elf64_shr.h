@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include "types.h"
-#include "binary.h"
+#include "elf64.h"
 
 #define SHN_UNDEF	0x0000
 #define SHN_LOPROC	0xFF00
@@ -53,7 +53,8 @@ struct Elf64_Shdr_s {
 
 void Elf64_write_shr(FILE *bin, Elf64_Shdr *shr, Elf64_Off offset);
 
-void Elf64_write_shr_all(ELF *bin);
+void Elf64_write_shr_all(FILE *bin, Elf64_Shdr **shr_tab, Elf64_Half shr_num, 
+				Elf64_Off shr_off, Elf64_Half shr_entrysize);
 
 Elf64_Shdr **read_shr_all(FILE *bin, Elf64_Half shr_num, Elf64_Off shr_off, Elf64_Half shr_entrysize);
 
