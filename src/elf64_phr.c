@@ -3,8 +3,9 @@
 
 #include "elf64_phr.h"
 #include "types.h"
-#include "binary.h"
+#include "elf64.h"
 #include "elf64_read.h"
+#include "elf64_write.h"
 
 /* Number of columns for displaying a section type */
 #define COLUMN_TYPE_LENGTH	16 
@@ -81,6 +82,77 @@ Elf64_Phdr **Elf64_read_phr_all(FILE *bin,
 	}
 	return phr_tab;
 }					
+
+
+/* TODO */
+void Elf64_write_phr(FILE *bin, Elf64_Phdr *phr, Elf64_Addr offset) {
+	/* Seek to the beginning of the program header */
+	fseek(bin, offset, SEEK_SET);
+	/* Write type */
+	Elf64_write_word_le(bin, phr->p_type);
+	/* Write flags */
+	Elf64_write_word_le(bin, phr->p_flags);
+	/* Write offset (bytes into file) */
+	Elf64_write_off_le(bin, phr->p_offset);
+	/* Write virtual address */
+	Elf64_write_addr_le(bin, phr->p_vaddr);
+	/* Write physical address */
+	Elf64_write_addr_le(bin, phr->p_paddr);
+	/* Write size of the file image of the segment */
+	Elf64_write_xword_le(bin, phr->p_filesz);
+	/* Write size of the memory image of the segment */
+	Elf64_write_xword_le(bin, phr->p_memsz);
+	/* Write memory alignment */
+	Elf64_write_xword_le(bin, phr->p_align);
+	return;
+} 
+
+
+/* TODO */
+void Elf64_write_phr_all(FILE *bin, 
+					Elf64_Phdr **phr_tab,
+					Elf64_Half phr_num, 
+					Elf64_Off phr_off, 
+					Elf64_Half phr_entrysize) {
+	
+	/* Offset of the program header to be read (bytes into file) */
+	Elf64_Off offset = 0;
+	size_t i;
+	/* Read the program headers one by one */
+	for (i = 0; i < phr_num; i++) {
+		Elf64_write_phr(bin, phr_tab[i], phr_off + offset);
+		offset += phr_entrysize;
+	}
+	return;
+}
+
+
+// TODO
+Elf64_Phdr *Elf64_get_pnote(ELF *bin) {
+	size_t i;
+	Elf64_Phdr *phr;
+	for (i = 0; i < bin->ehr->e_phnum; i++) {
+		phr = bin->phr[i];
+		if (phr->p_type == PT_NOTE) {
+			return phr;
+		}
+	}
+	return NULL;
+}
+
+
+// TODO
+Elf64_Phdr *Elf64_get_pcode(ELF *bin) {
+	size_t i;
+	Elf64_Phdr *phr;
+	for (i = 0; i < bin->ehr->e_phnum; i++) {
+		phr = bin->phr[i];
+		if ((phr->p_flags & 0x04) != 0 && (phr->p_flags & 0x01) != 0) {
+			return phr;
+		}
+	}
+	return NULL;
+}
 
 
 /*

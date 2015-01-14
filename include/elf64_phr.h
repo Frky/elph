@@ -1,6 +1,6 @@
 
 #include "types.h"
-#include "binary.h"
+#include "elf64.h"
 
 #define PT_NULL		0x0
 #define PT_LOAD		0x1
@@ -36,4 +36,13 @@ Elf64_Phdr **Elf64_read_phr_all(FILE *bin,
 					Elf64_Off phr_off, 
 					Elf64_Half phr_entrysize);
 					
+void Elf64_write_phr_all(FILE *bin, 
+					Elf64_Phdr **phr_tab,
+					Elf64_Half phr_num, 
+					Elf64_Off phr_off, 
+					Elf64_Half phr_entrysize);
+
+Elf64_Phdr *Elf64_get_pnote(ELF *bin);
+Elf64_Phdr *Elf64_get_pcode(ELF *bin);
+
 void Elf64_print_phr_info(ELF *bin);
