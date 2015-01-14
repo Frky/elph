@@ -6,6 +6,7 @@
 #include "types.h"
 #include "elf64_hdr.h"
 #include "elf64_read.h"
+#include "elf64_write.h"
 #include "retcodes.h"
 
 int DEBUG_HEADER = 0;
@@ -335,13 +336,13 @@ Elf64_Ehdr *read_header(FILE *bin_file) {
 	/* Read the size of a program table entry */
 	ehr->e_phentsize = Elf64_read_half_le(bin_file);
 
-	/* Read the number of entries in section table */
+	/* Read the number of entries in program table */
 	ehr->e_phnum = Elf64_read_half_le(bin_file);
 
 	/* Read the size of a section table entry */
 	ehr->e_shentsize = Elf64_read_half_le(bin_file);
 
-	/* Read the number of entries in program table */
+	/* Read the number of entries in section table */
 	ehr->e_shnum = Elf64_read_half_le(bin_file);
 
 	/* Read section name string table index */
@@ -349,6 +350,56 @@ Elf64_Ehdr *read_header(FILE *bin_file) {
 
 	return ehr;
 }
+
+
+/*
+ * From a header structure, write the corresponding information into binary
+ * file specified in parameter. Of course, this overwrites the old header of 
+ * the given binary file if there is already one.
+ *
+ * @param 	bin_file	File where to write the bytes
+ * @param 	hdr		Header to write into file
+ *
+ * @req		The file given as parameter must be opened in write mode
+ *
+ */
+void Elf64_write_ehr(FILE *bin_file, Elf64_Ehdr *hdr) {
+	size_t i;
+	/* Seek to the beginning of the file */
+	fseek(bin_file, 0L, SEEK_SET);
+	/* Write elf identification */
+	for (i = 0; i < EI_NIDENT; i++) {
+		Elf_write_byte(bin_file, hdr->e_ident[i]);
+	}
+	/* Write type of binary (shared, reloc, etc.) */
+	Elf64_write_half_le(bin_file, hdr->e_type);
+	/* Write the target architecture */
+	Elf64_write_half_le(bin_file, hdr->e_machine);
+	/* Write ELF version (should be 1) */
+	Elf64_write_word_le(bin_file, hdr->e_version);
+	/* Write the entry point of the program */
+	Elf64_write_addr_le(bin_file, hdr->e_entry);
+	/* Write the program header table offset */
+	Elf64_write_off_le(bin_file, hdr->e_phoff);
+	/* Write the section header table offset */
+	Elf64_write_off_le(bin_file, hdr->e_shoff);
+	/* Write the flags */
+	Elf64_write_word_le(bin_file, hdr->e_flags);
+	/* Write the ELF header size */
+	Elf64_write_half_le(bin_file, hdr->e_ehsize);
+	/* Write the size of a program table entry */
+	Elf64_write_half_le(bin_file, hdr->e_phentsize);
+	/* Write the number of entries in program table */
+	Elf64_write_half_le(bin_file, hdr->e_phnum);
+	/* Write the size of a section table entry */
+	Elf64_write_half_le(bin_file, hdr->e_shentsize);
+	/* Write the number of entries in section table */
+	Elf64_write_half_le(bin_file, hdr->e_shnum);
+	/* Write section name string table index */
+	Elf64_write_half_le(bin_file, hdr->e_shstrndx);
+	return;
+}
+
 
 /*
  * Print the string corresponding to the OS ABI

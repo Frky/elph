@@ -69,6 +69,7 @@ struct Elf64_Ehdr_s {
 }; 
 
 Elf64_Ehdr *read_header(FILE *bin_file);
+void Elf64_write_ehr(FILE *bin_file, Elf64_Ehdr *hdr);
 void print_header_info(Elf64_Ehdr *ehr);
 
 #endif
