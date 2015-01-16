@@ -2,8 +2,8 @@
 
 Tool for ELF64 binaries providing several functionalities, among which:
 
-* display information about ELF header, section table, programme table, symbol table, etc. (output in readelf-like)
-* provide information about function location in binary (stripped only for now)
+* display information about ELF header, section table, program table, symbol table, etc. (output is readelf-like)
+* provide information about function location in binary 
 * allow to patch a binary to add code (see limitations in corresponding	section)
 
 
@@ -19,12 +19,16 @@ Because all the information needed are parsed by elfdump with no use of external
 
 ### Installation
 This time I made a Makefile, so you can just use it.
+
 `make`
 
 ## Usage
 
+### Basics 
+
 Basic usage: `./elfdump [options] target_binary`
 With no option, this will basically do nothing but parse `target_binary` and return.
+Option `-q` (or `--quiet`) disable global information printing
 
 ### Print information about a binary
 The following options are available and allow to display information about the binary given as last parameter:
@@ -48,7 +52,8 @@ and modify the entry point of the program to execute the payload. Please note th
 a new binary that includes this payload.
 * `-o path/to/generated/binary`: Gives the path to the modified binary. If unset, then the generated binary is `./patched`
 * `-j`: If this option is specified, the payload will be completed with a jump to the initial entry code of the binary. This means that after the payload
-will be executed, the program will run normally. If not specified, it is very likely that the program will crash after having executed the payload.
+will be executed, the program will run normally. If not specified, it is very likely that the program will crash after having executed the payload (depending on the 
+patcing strategy and the payload).
 
 #### Patching examples
 
@@ -58,11 +63,32 @@ a bash opening.
 after the NOPs the program will jump to the initial entry point, and then print "Hello world". Without `-j` option, the program crashes.
 
 
+## Patching methods
+
+In current version, two methods of patching are implemented. The method being used is decided regarding the size of the payload. In both cases, we use the fact that `NOTE` segment is almost always present in binaries, and almost always useless.
+
+### In `NOTE` segment
+If the target binary has a `NOTE` segment, and if this `NOTE` segment is large enough to embed the payload, then this method is choosen. Basically, it consists in:
+
+* Changing type and flags of `NOTE` segment to support code execution
+* Load payload in `NOTE` segment
+* Modify the entry point to point into the beginning of the payload
+
+### In a new segment
+If it is not possible to incorporate the payload in `NOTE` segment, then a new segment is created at the end of the file. In order to preserve consistency of offsets in file, we cannot add an entry into program header table (which is at the beginning of the ELF file). So we overwrite the `NOTE` segment header, and replace it with a header corresponding to the new segment. Finally, we load the payload at the end of the file, and edit the entry point.  
+
 ## Current limitations
 
 ### Binary format
 Currently, elfdump only supports 64 bits binary in little-endian mode.
 
 ### Patching
-For now, the patch is written in the note segment. The resize of this section has not been implemented yet, so the payload size is limited to the size of the note 
-segment in the target binary file.
+The current patching methods are, by design, very easy to detect. Thus, if the goal is to patch a binary remaining as discrete as possible, a lot of work still has to be done.
+
+
+## External links
+ * http://downloads.openwatcom.org/ftp/devel/docs/elf-64-gen.pdf
+ * http://www.linuxsecurity.com/resource\_files/documentation/virus-writing-HOWTO/\_html/additional.cs.html 
+ * http://shell-storm.org/shellcode/
+
+ 
