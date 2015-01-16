@@ -15,6 +15,8 @@
 #include "fdetect.h"
 #include "retcodes.h"
 #include "elf64_payload.h"
+#include "verbose.h"
+
 
 static int PRINT_HEADER_INFO = 0;
 static int PRINT_SECTION_HEADERS = 0;
@@ -43,6 +45,7 @@ void parse_args(int argc, char **argv) {
 			{"segments", no_argument, 	&PRINT_PROGRAM_HEADERS, 1},
 			{"symbols", no_argument, 	&PRINT_SYMBOLS, 1},
 			{"functions", no_argument, 	&PRINT_FUNCS, 1},
+			{"quiet", no_argument,	 	&QUIET, 1},
 			{"payload", required_argument, 	&PATCH, 1},
 			{"output", required_argument, 	0, 0},
 			/* These options don't set a flag.
@@ -52,7 +55,7 @@ void parse_args(int argc, char **argv) {
 		/* getopt_long stores the option index here. */
 		int option_index = 0;
 
-		c = getopt_long (argc, argv, "dhslSfp:jo:",
+		c = getopt_long (argc, argv, "dhslSfp:jo:q",
 				long_options, &option_index);
 
 		switch (c) {
@@ -76,6 +79,9 @@ void parse_args(int argc, char **argv) {
 			break;
 		case 'j':
 			JMP_ENTRY = 1;
+			break;
+		case 'q':
+			QUIET = 1;
 			break;
 		case 'p':
 			PATCH = 1;

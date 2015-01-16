@@ -3,12 +3,14 @@
 #include <stdlib.h>
 
 #include "types.h"
+#include "verbose.h"
 
 #define JMP_ENTRY_PL_SIZE	6
 
 
 unsigned char *get_payload(char *pl_fname, Elf64_Half *pl_size) {
 	unsigned char *pl;
+	std_out("[*] Get payload from file\n");
 	FILE *pl_file = fopen(pl_fname, "r");
 	fseek(pl_file, 0L, SEEK_END);
 	*pl_size = ftell(pl_file);
@@ -33,6 +35,7 @@ unsigned char *Elf64le_jmp_entry_pl(Elf64_Addr ep) {
 
 
 unsigned char *Elf64le_add_jmp_entry_pl(unsigned char *pl, Elf64_Addr ep, Elf64_Half *pl_size) {
+	std_out("[*] Add jump to initial entry point at the end of payload\n");
 	unsigned char *payload = malloc((*pl_size + JMP_ENTRY_PL_SIZE) * sizeof(char));
 	unsigned char *jmp_entry_pl = Elf64le_jmp_entry_pl(ep); 
 	Elf64_Half i;
