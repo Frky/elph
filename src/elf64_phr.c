@@ -345,3 +345,36 @@ void Elf64_print_phr_info(ELF *bin) {
 	}
 	return;
 }
+
+
+
+Elf64_Half Elf64_get_phr_idx(ELF *bin, Elf64_Phdr *phr) {
+	Elf64_Half i;
+	for (i = 0; i < bin->ehr->e_phnum; i++) {
+		if (bin->phr[i] == phr)
+			return i;
+	}
+	return -1;
+}
+
+
+void Elf64_replace_phr(ELF *bin, Elf64_Phdr *phr, Elf64_Half idx) {
+	int dsize = bin->phr[idx]->p_filesz - phr->p_filesz;
+#if 0
+	size_t i;
+	Elf64_Phdr *prev_phdr = NULL;
+	for (i = 0; i < bin->ehr->e_phnum; i++) {
+		if (bin->phr[i]->p_offset < bin->phr[idx]->p_offset) {
+			if (prev_phdr == NULL || prev_phdr->p_offset < bin->phr[i]->p_offset)
+				prev_phdr = bin->phr[i];
+		}
+	} 
+	prev_phdr->p_filesz += bin->phr[idx]->p_filesz;
+	prev_phdr->p_memsz += bin->phr[idx]->p_memsz;
+#endif
+	free(bin->phr[idx]);
+	bin->phr[idx] = phr;
+	bin->size += dsize;
+	/* Todo edit file size */
+	return;
+}

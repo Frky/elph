@@ -25,6 +25,9 @@ ELF *elf64_read(char *e_fname) {
 	// TODO check existence of file 
 	bin->file = fopen(e_fname, "r");
 
+	fseek(bin->file, 0L, SEEK_END);
+	bin->size = ftell(bin->file);
+
 	/* Read elf header */	
 	bin->ehr = read_header(bin->file);
 	/* Read section header table */

@@ -45,4 +45,8 @@ void Elf64_write_phr_all(FILE *bin,
 Elf64_Phdr *Elf64_get_pnote(ELF *bin);
 Elf64_Phdr *Elf64_get_pcode(ELF *bin);
 
+Elf64_Half Elf64_get_phr_idx(ELF *bin, Elf64_Phdr *phr);
+
 void Elf64_print_phr_info(ELF *bin);
+
+void Elf64_replace_phr(ELF *bin, Elf64_Phdr *phr, Elf64_Half idx);

@@ -22,7 +22,7 @@ static int PRINT_PROGRAM_HEADERS = 0;
 static int PRINT_SYMBOLS = 0;
 static int PRINT_FUNCS = 0;
 
-static int PATCH_NOTE = 0;
+static int PATCH = 0;
 static int JMP_ENTRY = 0;
 
 char *pl_fname;
@@ -43,7 +43,7 @@ void parse_args(int argc, char **argv) {
 			{"segments", no_argument, 	&PRINT_PROGRAM_HEADERS, 1},
 			{"symbols", no_argument, 	&PRINT_SYMBOLS, 1},
 			{"functions", no_argument, 	&PRINT_FUNCS, 1},
-			{"payload", required_argument, 	&PATCH_NOTE, 1},
+			{"payload", required_argument, 	&PATCH, 1},
 			{"output", required_argument, 	0, 0},
 			/* These options don't set a flag.
 			   We distinguish them by their indices. */
@@ -78,12 +78,12 @@ void parse_args(int argc, char **argv) {
 			JMP_ENTRY = 1;
 			break;
 		case 'p':
-			PATCH_NOTE = 1;
-			pl_fname = malloc(strlen(optarg));
+			PATCH = 1;
+			pl_fname = malloc(strlen(optarg)+1);
 			strcpy(pl_fname, optarg);
 			break;
 		case 'o':
-			out_fname = malloc(strlen(optarg));
+			out_fname = malloc(strlen(optarg)+1);
 			strcpy(out_fname, optarg);
 			break;
 		}
@@ -131,12 +131,13 @@ int main(int argc, char **argv) {
 	if (PRINT_FUNCS)
 		print_func_info(bin->ftab, bin->ftab_num);
 
-	if (PATCH_NOTE) {
+	if (PATCH) {
 		Elf64_Half pl_size;
 		unsigned char *pl = get_payload(pl_fname, &pl_size);
 		if (JMP_ENTRY)
-			pl = Elf64le_add_jmp_entry_pl(pl, bin->ehr->e_entry, &pl_size);
-		Elf64_patch_note(bin, pl, &pl_size, out_fname);
+			pl = Elf64le_add_jmp_entry_pl(pl, bin->ehr->e_entry, 
+									&pl_size);
+		Elf64_patch_binary(bin, pl, &pl_size, out_fname);
 	}
 
 	fclose(bin->file);
