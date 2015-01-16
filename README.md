@@ -1,6 +1,6 @@
-# elfdump
+# ELF Linking and Patching Hool
 
-Tool for ELF64 binaries providing several functionalities, among which:
+Hool for ELF64 binaries providing several functionalities, among which:
 
 * display information about ELF header, section table, program table, symbol table, etc. (output is readelf-like)
 * provide information about function location in binary 
@@ -8,13 +8,13 @@ Tool for ELF64 binaries providing several functionalities, among which:
 
 
 ## Examples
-* `./elfdump -h example/helloworld`
-* `./elfdump -p payload/bash -o infected_binary elfdump`
+* `./elph -h example/helloworld`
+* `./elph -p payload/bash -o infected_binary elph`
 
 
 ## Practical information
 ### Requirements
-Because all the information needed are parsed by elfdump with no use of external tool (such as readelf), there is no requirement, except a c compiler and a linux system.
+Because all the information needed are parsed by elfph with no use of external tool (such as readelf), there is no requirement, except a c compiler and a linux system.
 
 
 ### Installation
@@ -26,7 +26,7 @@ This time I made a Makefile, so you can just use it.
 
 ### Basics 
 
-Basic usage: `./elfdump [options] target_binary`
+Basic usage: `./elph [options] target_binary`
 With no option, this will basically do nothing but parse `target_binary` and return.
 Option `-q` (or `--quiet`) disable global information printing
 
@@ -39,16 +39,16 @@ The following options are available and allow to display information about the b
 * `-l`: Program headers information
 
 ### Retrieve functions
-One of elfdump aims is to locate embedded functions of a binary. For now, the function detection is trivial and is only based on symbol table information. 
+One of elph aims is to locate embedded functions of a binary. For now, the function detection is trivial and is only based on symbol table information. 
 Of course, this is not possible for a stripped binary, so one of the next steps is to implement some heuristical function searching algorithms.
 
 * `-f`: Print infomation about functions found in symbol table (such as name, offset in file)
 
 ### Patch a binary
-The patch of a binary is the other main aim of elfdump. From a x86_64 payload (see `payload/` for examples), elfdump includes it in the target binary, 
+The patch of a binary is the other main aim of elph. From a x86_64 payload (see `payload/` for examples), elph includes it in the target binary, 
 and modify the entry point of the program to execute the payload. Please note that in no way the initial binary is modified ; a new file is generated.
 
-* `-p path/to/payload`: This option gives the path to the payload to include into target binary. As soon as `-p` is specified, elfdump will generate
+* `-p path/to/payload`: This option gives the path to the payload to include into target binary. As soon as `-p` is specified, elph will generate
 a new binary that includes this payload.
 * `-o path/to/generated/binary`: Gives the path to the modified binary. If unset, then the generated binary is `./patched`
 * `-j`: If this option is specified, the payload will be completed with a jump to the initial entry code of the binary. This means that after the payload
@@ -57,9 +57,9 @@ patcing strategy and the payload).
 
 #### Patching examples
 
-* `./elfdump -o malicious -p payload/bash example/helloworld`: This will add a shellcode to `helloworld`, and so running this program will now result in
+* `./elph -o malicious -p payload/bash example/helloworld`: This will add a shellcode to `helloworld`, and so running this program will now result in
 a bash opening. 
-* `./elfdump -o harmless -p payload/nop -j example/helloworld`: This will add a payload consisting of four NOPs in the binary, and because `-j` was specified, 
+* `./elph -o harmless -p payload/nop -j example/helloworld`: This will add a payload consisting of four NOPs in the binary, and because `-j` was specified, 
 after the NOPs the program will jump to the initial entry point, and then print "Hello world". Without `-j` option, the program crashes.
 
 
@@ -80,7 +80,7 @@ If it is not possible to incorporate the payload in `NOTE` segment, then a new s
 ## Current limitations
 
 ### Binary format
-Currently, elfdump only supports 64 bits binary in little-endian mode.
+Currently, elph only supports 64 bits binary in little-endian mode.
 
 ### Patching
 The current patching methods are, by design, very easy to detect. Thus, if the goal is to patch a binary remaining as discrete as possible, a lot of work still has to be done.

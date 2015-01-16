@@ -31,4 +31,5 @@
 # Vim temporary files
 .*.swp
 
-elfdump
+elph
+patched
