@@ -90,6 +90,17 @@ Elf64_Shdr **read_shr_all(FILE *bin, Elf64_Half shr_num, Elf64_Off shr_off, Elf6
 }
 
 
+/*
+ * Write a section header into binary file (erasing the previous one if any). 
+ * 
+ * @param	bin		File where to write the section header
+ * @param	shr		Section header to write
+ * @param	offset		Offset in the binary file where to write the section header 
+ *				(in bytes into file)
+ *
+ * @req		The file pointed by bin must have been previously opened
+ *
+ */
 void Elf64_write_shr(FILE *bin, Elf64_Shdr *shr, Elf64_Off offset) {
 	/* Seek to the beginning of the section header */
 	fseek(bin, offset, SEEK_SET);
@@ -117,6 +128,19 @@ void Elf64_write_shr(FILE *bin, Elf64_Shdr *shr, Elf64_Off offset) {
 }
 
 
+/*
+ * Write all section headers in binary file. Overwrite previous ones if any. 
+ * 
+ * @param	bin		File where to write the section headers
+ * @param	shr_tab		Array of section headers to be written
+ * @param	shr_num		Number of section headers in phr_tab
+ * @param	shr_off		Offset of the section header table (in bytes 
+				into file)
+ * @param	shr_entrysize	Number of entries in section header table 
+ *
+ * @req		The file pointed by bin must have been previously opened
+ *
+ */
 void Elf64_write_shr_all(FILE *bin, Elf64_Shdr **shr_tab, Elf64_Half shr_num, 
 				Elf64_Off shr_off, Elf64_Half shr_entrysize) {
 	size_t i;

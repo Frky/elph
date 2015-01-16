@@ -8,6 +8,18 @@
 #include "elf64_phr.h"
 #include "sym_tab.h"
 
+
+/*
+ * Read a binary file and parse useful information, such as ELF header, section
+ * headers, program headers, symbol table, etc.
+ * This function opens the binary file and do not close it.
+ *
+ * @param   e_fname Name of the binary file to read
+ *
+ * @ret     ELF structure containing read information and a pointer 
+ *          on the binary file, previously opened
+ *
+ */
 ELF *elf64_read(char *e_fname) {
 	ELF *bin = malloc(sizeof(ELF));
 	// TODO check existence of file 

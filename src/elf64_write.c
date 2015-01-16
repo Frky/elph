@@ -6,7 +6,7 @@
 #include "retcodes.h"
 
 /*
- * Write a byte into file
+ * Write a byte into file at current position
  */
 void Elf_write_byte(FILE *bin_file, unsigned char byte) {
 	size_t ret = fwrite(&byte, 1, 1, bin_file);

@@ -84,7 +84,17 @@ Elf64_Phdr **Elf64_read_phr_all(FILE *bin,
 }					
 
 
-/* TODO */
+/*
+ * Write a program header into binary file (erasing the previous one if any). 
+ * 
+ * @param	bin		File where to write the program header
+ * @param	phr		Program header to write
+ * @param	offset		Offset in the binary file where to write the program header 
+ *				(in bytes into file)
+ *
+ * @req		The file pointed by bin must have been previously opened
+ *
+ */
 void Elf64_write_phr(FILE *bin, Elf64_Phdr *phr, Elf64_Addr offset) {
 	/* Seek to the beginning of the program header */
 	fseek(bin, offset, SEEK_SET);
@@ -108,7 +118,19 @@ void Elf64_write_phr(FILE *bin, Elf64_Phdr *phr, Elf64_Addr offset) {
 } 
 
 
-/* TODO */
+/*
+ * Write all program headers in binary file. Overwrite previous ones if any. 
+ * 
+ * @param	bin		File where to write the program headers
+ * @param	phr_tab		Array of program headers to be written
+ * @param	phr_num		Number of program headers in phr_tab
+ * @param	phr_off		Offset of the program header table (in bytes 
+				into file)
+ * @param	phr_entrysize	Number of entries in program header table 
+ *
+ * @req		The file pointed by bin must have been previously opened
+ *
+ */
 void Elf64_write_phr_all(FILE *bin, 
 					Elf64_Phdr **phr_tab,
 					Elf64_Half phr_num, 
@@ -127,13 +149,26 @@ void Elf64_write_phr_all(FILE *bin,
 }
 
 
-// TODO
+/*
+ * Find the note segment in an array of program headers.
+ * The method used here is exclusively based on PT_TYPE.
+ * If no note segment is found, a null pointer is returned.
+ * 
+ * @param	bin		Binary structure (program headers are in bin->phr)
+ *
+ * @req		The elf header and program header table must have been read previously 
+ *		(meaning that bin->ehr and bin->phr must have been allocated and filled)
+ *
+ */
 Elf64_Phdr *Elf64_get_pnote(ELF *bin) {
 	size_t i;
 	Elf64_Phdr *phr;
+	/* Iteration on program headers */
 	for (i = 0; i < bin->ehr->e_phnum; i++) {
 		phr = bin->phr[i];
+		/* Check type of program header */
 		if (phr->p_type == PT_NOTE) {
+			/* If PT_NOTE, return pointer */
 			return phr;
 		}
 	}
@@ -141,13 +176,27 @@ Elf64_Phdr *Elf64_get_pnote(ELF *bin) {
 }
 
 
-// TODO
+/*
+ * Find the code segment in an array of program headers.
+ * The method used here is based on flags: it returns the first
+ * program header to be readable and executable.
+ * If no code segment is found, a null pointer is returned.
+ * 
+ * @param	bin		Binary structure (program headers are in bin->phr)
+ *
+ * @req		The elf header and program header table must have been read previously 
+ *		(meaning that bin->ehr and bin->phr must have been allocated and filled)
+ *
+ */
 Elf64_Phdr *Elf64_get_pcode(ELF *bin) {
 	size_t i;
 	Elf64_Phdr *phr;
+	/* Iteration on program headers */
 	for (i = 0; i < bin->ehr->e_phnum; i++) {
 		phr = bin->phr[i];
+		/* Check readable and executable flags */
 		if ((phr->p_flags & 0x04) != 0 && (phr->p_flags & 0x01) != 0) {
+			/* If both flags are set, it is likely to be code segment */
 			return phr;
 		}
 	}
