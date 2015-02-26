@@ -278,7 +278,7 @@ void Elf64_print_ph_type(Elf64_Word p_type) {
  */
 void Elf64_print_ph_flags(Elf64_Xword p_flags) {
 	/* Checking Writable flag */
-	if ((p_flags & 0x1) != 0)
+	if ((p_flags & 0x4) != 0)
 		printf("R");
 	else
 		printf(" ");
@@ -288,7 +288,7 @@ void Elf64_print_ph_flags(Elf64_Xword p_flags) {
 	else
 		printf(" ");
 	/* Checking eXecutable flag */
-	if ((p_flags & 0x4) != 0)
+	if ((p_flags & 0x1) != 0)
 		printf("E");
 	else
 		printf(" ");
